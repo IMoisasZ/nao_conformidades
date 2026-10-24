@@ -3,6 +3,7 @@ import streamlit as st
 from components.tab import TabComponent
 from views.pages.empresa import EmpresaPage
 from views.pages.setor import SetorPage
+from views.pages.usuario import UsuarioPage
 
 class LayoutCadastros:
     def __init__(self):
@@ -15,7 +16,7 @@ class LayoutCadastros:
             EmpresaPage().renderizar()
         
         with user:
-            pass
+            UsuarioPage().renderizar()
 
         with cliente:
             pass

@@ -2,7 +2,7 @@ import streamlit as st
 import uuid
 
 class InputComponent:
-    def __init__(self, label:str="nome_input", disabled:bool=False, value=None, placeholder:str="", icon:str=None, color:str=None, key:str=None):
+    def __init__(self, label:str="nome_input", disabled:bool=False, value=None, placeholder:str="", icon:str=None, color:str=None, key:str=None, type:str="default"):
         self.label = label
         self.disabled = disabled
         self.value = value
@@ -10,6 +10,7 @@ class InputComponent:
         self.icon = icon
         self.color = color
         self.key = key if key else f"input_{uuid.uuid4().hex[:8]}"
+        self.type = type
 
     def input(self):
         label_visibility = "visible"
@@ -19,4 +20,4 @@ class InputComponent:
             label_visibility = "collapsed"
         else:
             label_color = self.label
-        return st.text_input(label=label_color, disabled=self.disabled, value=self.value, placeholder=self.placeholder, icon=self.icon, label_visibility=label_visibility, key=self.key)
+        return st.text_input(label=label_color, disabled=self.disabled, value=self.value, placeholder=self.placeholder, icon=self.icon, label_visibility=label_visibility, key=self.key, type=self.type)
