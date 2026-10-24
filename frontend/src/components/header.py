@@ -18,7 +18,7 @@ class HeaderComponent:
     def header_rnc(self):
         img, header = st.columns([1,5])
         with img:
-            st.image("static/logo_injetaq.png")
+            st.image("frontend/src/static/logo_injetaq.png")
         with header:    
             self.header = st.header(body=self.label, divider=self.divider, width=self.width, text_alignment=self.text_alignment)
         
@@ -38,7 +38,7 @@ class HeaderComponent:
     def header_padrao(self):
         img, header = st.columns([1,5])
         with img:
-            st.image("static/logo_injetaq.png")
+            st.image("frontend/src/static/logo_injetaq.png")
         with header:
             return st.header(body=self.label, divider=self.divider, width=self.width, text_alignment=self.text_alignment)
 
