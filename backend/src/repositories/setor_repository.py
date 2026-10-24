@@ -34,12 +34,8 @@ class SetorRepository:
         return db.query(SetorModel).offset(skip).limit(limit).all()
     
     @staticmethod
-    def obter_Setor_pelo_id(db:Session, Setor_id:int) -> SetorModel | None:
+    def obter_setor_pelo_id(db:Session, Setor_id:int) -> SetorModel | None:
         return db.query(SetorModel).filter(SetorModel.id == Setor_id).first()
-
-    @staticmethod
-    def obter_Setor_pelo_cnpj(db:Session, cnpj:str) -> SetorModel | None:
-        return db.query(SetorModel).filter(SetorModel.cnpj == cnpj).first()
     
     @staticmethod
     def desativar_ativar_Setor(db:Session, Setor_id:int, status:bool) -> SetorModel:
