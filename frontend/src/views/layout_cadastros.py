@@ -1,6 +1,7 @@
 import streamlit as st
 
 from components.tab import TabComponent
+from views.pages.empresa import EmpresaPage
 from views.pages.setor import SetorPage
 
 class LayoutCadastros:
@@ -8,8 +9,11 @@ class LayoutCadastros:
         pass
 
     def renderizar(self):
-        user, cliente, fornecedor, setor = TabComponent(lista_tab=["Usuarios", "Clientes", "Fornecedores", "Setores"]).tabs()
+        empresa, user, cliente, fornecedor, setor = TabComponent(lista_tab=["Empresa", "Usuarios", "Clientes", "Fornecedores", "Setores"]).tabs()
 
+        with empresa:
+            EmpresaPage().renderizar()
+        
         with user:
             pass
 
