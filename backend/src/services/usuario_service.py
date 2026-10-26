@@ -35,6 +35,7 @@ class UsuarioService:
 # ------------------------------- Funções sistema -------------------------------
     @staticmethod
     def criar_usuario(db:Session, usuario_dados:UsuarioCreate) -> UsuarioResponse:
+        print(usuario_dados)
         UsuarioService.verificar_usuario_pelo_email(db=db, email=usuario_dados.email)
         
         usuario_dict = usuario_dados.model_dump()

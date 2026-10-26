@@ -1,4 +1,5 @@
 import sys
+from backend.src.connection.db_connection import init_db
 from pathlib import Path
 import streamlit as st
 
@@ -16,5 +17,11 @@ from frontend.src.views.layout_principal import LayoutPrincipal
 
 if __name__ == "__main__":
     st.set_page_config(layout="wide")
+
+    try:
+        init_db()
+    except Exception as e:
+        st.error(f"Erro ao conectar ao banco de dados: {e}")
+
     app = LayoutPrincipal()
     app.renderizar()
