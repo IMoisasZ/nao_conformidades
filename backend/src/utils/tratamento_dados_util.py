@@ -19,5 +19,4 @@ class TratamentoDados:
         self.valor_vazio()
         self.validacao()
 
-        return self.cleaned_value
-    
+        return self.cleaned_value    
