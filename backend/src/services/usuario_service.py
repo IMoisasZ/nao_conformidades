@@ -6,14 +6,14 @@ from backend.src.schemas.usuario_schema import UsuarioCreate, UsuarioUpdate, Usu
 class UsuarioService:
     # ------------------------------- Funções helpers  -------------------------------
     @staticmethod
-    def verificar_usuario_pelo_email(db:Session, email:str) -> bool:
+    def verificar_usuario_pelo_email(db:Session, email:str, usuario_id_atual:int | None = None) -> bool:
         if not email:
             raise ValueError(f"Email não informado!")
         
         usuario = UsuarioRepository.obter_usuario_pelo_email(db=db, email=email)
-        
-        if usuario:
-            raise ValueError(f"Ja existe um usuário cadastrado com o email {email}")
+
+        if usuario and (usuario_id_atual is None or usuario.id != usuario_id_atual):
+            raise ValueError(f"Já existe um usuário cadastrado com o e-mail {email}")
         
         return True
     
@@ -45,20 +45,27 @@ class UsuarioService:
     def alterar_usuario(db:Session, usuario_id:int, usuario_dados:UsuarioUpdate) -> UsuarioResponse:
         usuario = UsuarioService.verificar_usuario_pelo_id(db=db, usuario_id=usuario_id)
         
-        usurio_dict = usuario_dados.model_dump(exclude_unset=True, exclude={"id"})
+        usuario_dict = usuario_dados.model_dump(exclude_unset=True, exclude={"id"})
+
+        # Valida duplicidade apenas se o e-mail for alterado
+        if "email" in usuario_dict and usuario_dict["email"] != usuario.email:
+            UsuarioService.verificar_usuario_pelo_email(
+                db=db, 
+                email=usuario_dict["email"], 
+                usuario_id_atual=usuario_id
+            )
         
-        usuario_atualizado = UsuarioRepository.alterar_usuario(db=db, db_usuario=usuario, usuario_dados=usurio_dict)
+        usuario_atualizado = UsuarioRepository.alterar_usuario(db=db, db_usuario=usuario, usuario_dados=usuario_dict)
         return UsuarioResponse.model_validate(usuario_atualizado)
     
     @staticmethod
-    def obter_todos_usuarios(db:Session, skip:int = 0, limit:int = 100) -> list[UsuarioModel]:
+    def obter_todos_usuarios(db:Session, skip:int = 0, limit:int = 100) -> list[UsuarioResponse]:
         usuarios = UsuarioRepository.obter_todos_usuarios(db=db, skip=skip, limit=limit)
-        return [UsuarioResponse.model_validate(usuarios) for usuario in usuarios if usuario is not None]
+        return [UsuarioResponse.model_validate(usuario) for usuario in usuarios if usuario is not None]
     
     @staticmethod
     def obter_usuario_pelo_id(db:Session, usuario_id: int) -> UsuarioModel | None:
         usuario = UsuarioService.verificar_usuario_pelo_id(db=db, usuario_id=usuario_id)
-        
         return UsuarioResponse.model_validate(usuario)
     
     @staticmethod
@@ -68,9 +75,11 @@ class UsuarioService:
     
     @staticmethod
     def obter_usuario_pelo_email(db:Session, email:str) -> UsuarioModel:
-        tem_usuario = UsuarioService.verificar_usuario_pelo_email(db=db, email=email)
-        if tem_usuario:
-            usuario = UsuarioRepository.obter_usuario_pelo_email(db=db, email=email)
-            return UsuarioResponse.model_validate(usuario)
-        
-        
+        usuario = UsuarioRepository.obter_usuario_pelo_email(db=db, email=email)
+        return UsuarioResponse.model_validate(usuario)
+
+    @staticmethod
+    def alterar_senha(db:Session, usuario_id:int, nova_senha:str) -> UsuarioModel:
+        usuario = UsuarioService.verificar_usuario_pelo_id(db=db, usuario_id=usuario_id)
+        usuario_alterado = UsuarioRepository.alterar_senha(db=db, db_usuario=usuario, nova_senha=nova_senha)
+        return UsuarioResponse.model_validate(usuario_alterado)
