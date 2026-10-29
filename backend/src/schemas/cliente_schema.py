@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 from backend.src.utils.tratamento_dados_util import TratamentoDados
 
 class ClienteCreate(BaseModel):
-    min_length_cliente = ClassVar[int] = 3
+    min_length_cliente: ClassVar[int] = 3
     nome_cliente: str = Field(..., min_length=min_length_cliente, max_length=150)
     ativo: bool = True
 
@@ -18,9 +18,8 @@ class ClienteCreate(BaseModel):
         )
         return tratamento.validar_e_limpar()
 
-
 class ClienteUpdate(BaseModel):
-    min_length_cliente:ClassVar[int] = 3
+    min_length_cliente: ClassVar[int] = 3
     id:int = Field(..., description="ID do cliente")
     nome_cliente: Optional[str] = None
     ativo: Optional[bool] = None
@@ -44,5 +43,5 @@ class ClienteResponse(BaseModel):
     ativo: bool
     created_at: Optional[datetime] = None
 
-    class config:
+    class Config:
         from_attributes = True

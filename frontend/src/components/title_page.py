@@ -10,7 +10,7 @@ class TitlePages:
         self.parametro_acao = parametro_acao
     
     def title(self):
-        title_col, espaco, btn_col = st.columns([2, 4, 2], vertical_alignment="bottom")
+        title_col, espaco, btn_col = st.columns([4, 4, 2], vertical_alignment="bottom")
         with title_col:
             st.write(f"## {self.title_page}")
         with btn_col:

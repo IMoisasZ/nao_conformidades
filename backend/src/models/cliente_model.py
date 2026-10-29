@@ -6,7 +6,7 @@ class ClienteModel(Base):
     __tablename__ = "clientes"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nome_cliente = Column(String(150), nullable=True, unique=True)
+    nome_cliente = Column(String(150), nullable=False, unique=True)
     ativo = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda:datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda:datetime.now(timezone.utc), onupdate=lambda:datetime.now(timezone.utc))
