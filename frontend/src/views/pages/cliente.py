@@ -74,20 +74,11 @@ class ClientePage:
 
         Divider(color="gray").divider()
 
-        if is_edicao:
-            btn_incluir_col, btn_novo_col, btn_contato_col = st.columns(3)
-            with btn_incluir_col:
-                btn_cadastro_alteracao = ButtonComponent(label="Editar cliente" if is_edicao else "Cadastrar cliente", key="btn_cadastrar_cliente").btn()
-            with btn_novo_col:
-                btn_novo = ButtonComponent(label="Novo", key="btn_novo_cliente", onclick=self.acao_botao_novo).btn()
-            with btn_contato_col:
-                btn_contatos = ButtonComponent(label="Contatos do cliente", key="btn_contato_cliente").btn()
-        else:
-            btn_incluir_col, btn_novo_col = st.columns(2)
-            with btn_incluir_col:
-                btn_cadastro_alteracao = ButtonComponent(label="Editar cliente" if is_edicao else "Cadastrar cliente", key="btn_cadastrar_cliente").btn()
-            with btn_novo_col:
-                btn_novo = ButtonComponent(label="Novo", key="btn_novo_cliente", onclick=self.acao_botao_novo).btn()
+        btn_incluir_col, btn_novo_col = st.columns(2)
+        with btn_incluir_col:
+            btn_cadastro_alteracao = ButtonComponent(label="Editar cliente" if is_edicao else "Cadastrar cliente", key="btn_cadastrar_cliente").btn()
+        with btn_novo_col:
+            btn_novo = ButtonComponent(label="Novo", key="btn_novo_cliente", onclick=self.acao_botao_novo).btn()
 
         if btn_cadastro_alteracao:
             try:
@@ -188,3 +179,4 @@ class ClientePage:
     def acao_botao_novo(self):
         self.limpar_dados()
         st.rerun()
+
