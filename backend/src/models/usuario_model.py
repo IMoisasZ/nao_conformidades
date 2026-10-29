@@ -13,9 +13,9 @@ class UsuarioModel(Base):
     __tablename__ = "usuarios"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    codigo = Column(Integer, nullable=True)
+    codigo = Column(Integer, nullable=True, unique=True)
     nome = Column(String(200), nullable=False)
-    email = Column(String(200), nullable=True)
+    email = Column(String(200), nullable=True, unique=True)
     tipo_usuario = Column(Enum(TipoUsuario, values_callable=lambda obj: [e.value for e in obj]))
     senha = Column(String(5), nullable=False)
     ativo = Column(Boolean, default=True)

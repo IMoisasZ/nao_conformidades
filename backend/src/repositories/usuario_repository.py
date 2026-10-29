@@ -10,6 +10,7 @@ class UsuarioRepository:
             db.add(db_usuario)
             db.commit()
             db.refresh(db_usuario)
+            print(db_usuario)
             return db_usuario
         except SQLAlchemyError as e:
             db.rollback()

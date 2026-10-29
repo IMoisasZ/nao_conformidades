@@ -10,7 +10,7 @@ class UsuarioCreate(BaseModel):
     min_length_nome_usuario: ClassVar[int] = 10
     num_caracteres_senha: ClassVar[int] = 5
 
-    codigo: int = Field(..., description="Código do usuário")
+    codigo: Optional[int] = Field(..., description="Código do usuário")
     nome: str = Field(..., min_length=min_length_nome_usuario, max_length=200, description="Nome do usuário")
     email: str = Field(..., max_length=200, description="E-mail do usuário")
     tipo_usuario: TipoUsuario = Field(..., description="Tipo/Nível de permissão do usuário")
@@ -30,7 +30,8 @@ class UsuarioCreate(BaseModel):
     @field_validator("senha")
     @classmethod
     def validar_senha(cls, v: str) -> str:
-        if not v:
+        senha_limpa = (v or "").strip()
+        if not senha_limpa:
             raise ValueError("A senha não pode ser vazia.")
         
         tratamento = TratamentoNumeroCaracteres().qtde_caracteres(
@@ -75,7 +76,8 @@ class UsuarioUpdateSenha(BaseModel):
     @field_validator("senha")
     @classmethod
     def validar_senha(cls, v: str) -> str:
-        if not v:
+        senha_limpa = (v or "").strip()
+        if not senha_limpa:
             raise ValueError("A senha não pode ser vazia.")
 
         tratamento = TratamentoNumeroCaracteres().qtde_caracteres(
@@ -89,7 +91,7 @@ class UsuarioUpdateSenha(BaseModel):
 
 class UsuarioResponse(BaseModel):
     id: int
-    codigo: int
+    codigo: Optional[int] = None
     nome: str
     email: str
     tipo_usuario: TipoUsuario

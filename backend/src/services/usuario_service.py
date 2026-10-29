@@ -32,13 +32,25 @@ class UsuarioService:
         if not usuario:
             raise ValueError(f"Não encontrado o usuario pelo com o nome {nome}")
         return usuario
+
+    @staticmethod
+    def verificar_usuario_pelo_codigo(db:Session, codigo_usuario: int, usuario_id_atual: int | None = None) -> bool:
+        if codigo_usuario is None:
+            return True
+        
+        usuario = UsuarioRepository.obter_usuario_pelo_codigo(db=db, codigo_usuario=codigo_usuario)
+
+        if usuario and (usuario_id_atual is None or usuario.id != usuario_id_atual):
+            raise ValueError(f"O código {codigo_usuario} já foi cadastrado para outro usuário!")
+        return True
 # ------------------------------- Funções sistema -------------------------------
     @staticmethod
     def criar_usuario(db:Session, usuario_dados:UsuarioCreate) -> UsuarioResponse:
-        print(usuario_dados)
         UsuarioService.verificar_usuario_pelo_email(db=db, email=usuario_dados.email)
+        UsuarioService.verificar_usuario_pelo_codigo(db=db, codigo_usuario=usuario_dados.codigo)
         
         usuario_dict = usuario_dados.model_dump()
+        print(usuario_dict)
         novo_usuario = UsuarioRepository.criar_usuario(db=db, dados_usuario=usuario_dict)
         return UsuarioResponse.model_validate(novo_usuario)
     
@@ -68,6 +80,13 @@ class UsuarioService:
     def obter_usuario_pelo_id(db:Session, usuario_id: int) -> UsuarioModel | None:
         usuario = UsuarioService.verificar_usuario_pelo_id(db=db, usuario_id=usuario_id)
         return UsuarioResponse.model_validate(usuario)
+
+    @staticmethod
+    def obter_usuario_pelo_codigo(db:Session, codigo_usuario:int) -> UsuarioResponse:
+        usuario = UsuarioService.verificar_usuario_pelo_codigo(db=db, codigo_usuario=codigo_usuario)
+        if usuario:
+            usuario_pelo_codigo = UsuarioRepository.obter_usuario_pelo_codigo(db=db, codigo_usuario=codigo_usuario)
+            return UsuarioResponse.model_validate(usuario_pelo_codigo)
     
     @staticmethod
     def obter_usuario_pelo_nome(db:Session, nome:str) -> UsuarioModel:

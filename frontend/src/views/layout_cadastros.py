@@ -7,14 +7,14 @@ from views.pages.usuario import UsuarioPage
 
 class LayoutCadastros:
     def __init__(self):
-        pass
+        self.ABA_ATIVA_KEY = "aba_ativa_cadastros"
 
     def renderizar(self):
-        empresa, user, cliente, fornecedor, setor = TabComponent(lista_tab=["Empresa", "Usuarios", "Clientes", "Fornecedores", "Setores"]).tabs()
+        empresa, user, cliente, fornecedor, setor = TabComponent(lista_tab=["Empresa", "Usuários", "Clientes", "Fornecedores", "Setores"], key="tab_cadastros").tabs()
 
         with empresa:
             EmpresaPage().renderizar()
-        
+
         with user:
             UsuarioPage().renderizar()
 
@@ -26,4 +26,3 @@ class LayoutCadastros:
 
         with setor:
             SetorPage().renderizar()
-            
