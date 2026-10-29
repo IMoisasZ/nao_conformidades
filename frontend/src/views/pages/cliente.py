@@ -40,8 +40,6 @@ class ClientePage:
         with btn_novo_col:
             ButtonComponent(label="Novo", key="btn_novo_cliente").btn()
 
-
-
     def lista_view(self):
         TitlePages(title_page="Lista de clientes", btn_nome="Cadastrar cliente", acao_btn=self.mudar_tela, parametro_acao=True).title()
         dados_cliente = [

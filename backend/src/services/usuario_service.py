@@ -50,7 +50,6 @@ class UsuarioService:
         UsuarioService.verificar_usuario_pelo_codigo(db=db, codigo_usuario=usuario_dados.codigo)
         
         usuario_dict = usuario_dados.model_dump()
-        print(usuario_dict)
         novo_usuario = UsuarioRepository.criar_usuario(db=db, dados_usuario=usuario_dict)
         return UsuarioResponse.model_validate(novo_usuario)
     
