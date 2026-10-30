@@ -44,7 +44,7 @@ class ClientePage:
                 nome_padrao = getattr(cliente_dados, "nome_cliente", "")
                 ativo_padrao = getattr(cliente_dados, "ativo", True)
             elif isinstance(cliente_dados, dict):
-                id_padrao = cliente_dados.get("id")
+                id_padrao = cliente_dados.get("id") or cliente_dados.get("ID")
                 nome_padrao = cliente_dados.get("nome_cliente") or cliente_dados.get("Cliente") or ""
                 ativo_padrao = cliente_dados.get("ativo", True)
             else:
@@ -54,22 +54,22 @@ class ClientePage:
             id_padrao = None
             if "input_cliente" not in st.session_state:
                 st.session_state["input_cliente"] = ""
-            if "checkbox_ativo" not in st.session_state:
-                st.session_state["checkbox_ativo"] = True
+            if "checkbox_ativo_cliente" not in st.session_state:
+                st.session_state["checkbox_ativo_cliente"] = True
 
         titulo_pagina = f"Editar cliente: {nome_padrao}" if is_edicao else "Cadastrar cliente"
         TitlePages(title_page=titulo_pagina, btn_nome="Lista de clientes", acao_btn=self.mudar_tela, parametro_acao=False).title()
 
         if id_padrao and st.session_state.get("cliente_carregado_id") != id_padrao:
             st.session_state["input_cliente"] = nome_padrao
-            st.session_state["checkbox_ativo"] = ativo_padrao
+            st.session_state["checkbox_ativo_cliente"] = ativo_padrao
             st.session_state["cliente_carregado_id"] = id_padrao
 
         cliente_col, ativo_col, espaco = st.columns([4,2,4], vertical_alignment="bottom")
         with cliente_col:
             cliente = InputComponent(label="Cliente", key="input_cliente", placeholder="Informe o nome do cliente...").input()
         with ativo_col:
-            ativo = CheckboxComponent(label="Ativo", key="checkbox_ativo", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo", True)).checkbox()
+            ativo = CheckboxComponent(label="Ativo", key="checkbox_ativo_cliente", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo_cliente", True)).checkbox()
 
         Divider(color="gray").divider()
 
@@ -173,7 +173,7 @@ class ClientePage:
         st.session_state["cliente_carregado_id"] = None
 
         st.session_state["input_cliente"] = ""
-        st.session_state["checkbox_ativo"] = True
+        st.session_state["checkbox_ativo_cliente"] = True
 
     def acao_botao_novo(self):
         self.limpar_dados()

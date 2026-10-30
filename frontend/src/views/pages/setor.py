@@ -10,7 +10,7 @@ from components.title_page import TitlePages
 
 from backend.src.connection.db_connection import get_db
 from backend.src.schemas.setor_schema import SetorCreate, SetorUpdate
-# from backend.src.services.setor_service import SetorService
+from backend.src.services.setor_service import SetorService
 
 class SetorPage:
     def __init__(self):
@@ -43,9 +43,9 @@ class SetorPage:
                 nome_padrao = setor_dados.nome_setor
                 ativo_padrao = setor_dados.ativo
             elif isinstance(setor_dados, dict):
-                id_padrao = setor_dados.id
-                nome_padrao = getattr(setor_dados, "nome_setor", "")
-                ativo_padrao = getattr(setor_dados, "ativo", True)
+                id_padrao = setor_dados.get("id") or setor_dados.get("ID")
+                nome_padrao = setor_dados.get("nome_setor") or setor_dados.get("Setor") or ""
+                ativo_padrao = setor_dados.get("ativo", True)
             else:
                 id_padrao = None
                 is_edicao = False
@@ -60,29 +60,34 @@ class SetorPage:
         titulo_pagina = f"Editar setor: {nome_padrao}" if is_edicao else "Cadastrar setor"                
         TitlePages(title_page=titulo_pagina, btn_nome="Lista de setores", acao_btn=self.mudar_tela, parametro_acao=False).title()
 
+        if id_padrao and st.session_state.get("setor_carregado_id") != id_padrao:
+            st.session_state["input_setor"] = nome_padrao
+            st.session_state["checkbox_ativo_setor"] = ativo_padrao
+            st.session_state["setor_carregado_id"] = id_padrao 
+
         setor_col, ativo_col, espaco = st.columns([4,2,4], vertical_alignment="bottom")
         with setor_col:
             setor = InputComponent(label="Setor", key="input_setor").input()
         with ativo_col:
-            ativo = CheckboxComponent(label="Ativo", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo", True), key="checkbox_ativo_setor").checkbox()
+            ativo = CheckboxComponent(label="Ativo", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo_setor", True), key="checkbox_ativo_setor").checkbox()
 
         Divider(color="gray").divider()
         
         btn_cadastrar_col, btn_novo_col = st.columns(2)
         with btn_cadastrar_col:     
-            btn_cadastrar_alterar = ButtonComponent(label="Cadastrar setor", key="btn_cadastrar_alterar").btn()
+            btn_cadastrar_alterar = ButtonComponent(label="Editar setor" if is_edicao else "Cadastrar setor", key="btn_cadastrar_alterar").btn()
         with btn_novo_col:
-            ButtonComponent(label="Novo", key="btn_novo_setor").btn()
+            ButtonComponent(label="Novo", key="btn_novo_setor", onclick=self.acao_botao_novo).btn()
 
         if btn_cadastrar_alterar:
             try:
                 nome_str = (setor or "").strip()
                 if is_edicao:
                     dados_setor = SetorUpdate(id=id_padrao, nome_setor=nome_str, ativo=ativo)
-                    self.alterar_dados()
+                    self.alterar_dados(setor_id=id_padrao, dados_setor=dados_setor)
                 else:
                     dados_setor = SetorCreate(nome_setor=nome_str, ativo=ativo)
-                    self.salvar_dados()
+                    self.salvar_dados(dados_setor=dados_setor)
             except (ValueError, ValidationError) as e:
                 msg_erro = e.errors()[0]["msg"] if isinstance(e, ValidationError) else str(e)
                 self.message.definir_mensagem(f"Erro ao cadastrar/alterar: {msg_erro}", tipo="error")
@@ -124,27 +129,51 @@ class SetorPage:
     def salvar_dados(self, dados_setor:SetorCreate):
         try:
             with get_db() as db:
-                pass
+                novo_setor = SetorService.criar_setor(db=db, setor_dados=dados_setor)
+                self.message.definir_mensagem(f"O setor {novo_setor.nome_setor} foi cadastrado com sucesso!", tipo="success")
+                st.session_state[self.EDITANDO_SETOR] = None
+                st.session_state["setor_carregado_id"] = None
+                st.session_state[self.CADASTRO_SETOR] = False
+                st.rerun()
         except (ValueError, ValidationError) as e:
             msg_erro = e.errors()[0]["msg"] if isinstance(e, ValidationError) else str(e)
             self.message.definir_mensagem(f"Erro ao cadastrar: {msg_erro}", tipo="error")
             st.rerun()
 
-    def alterar_dados(self, dados_setor: SetorUpdate):
-        pass
+    def alterar_dados(self, setor_id:int, dados_setor: SetorUpdate):
+        try:
+            with get_db() as db:
+                setor_atualizado = SetorService.alterar_setor(db=db, setor_id=setor_id, setor_dados=dados_setor)
+                self.message.definir_mensagem(f"O setor {setor_atualizado.nome_setor} foi atualizado com sucesso!", tipo="success")
+                st.session_state[self.EDITANDO_SETOR] = None
+                st.session_state["setor_carregado_id"] = None
+                st.session_state[self.CADASTRO_SETOR] = False
+                st.rerun()
+        except (ValueError, ValidationError) as e:
+            msg_erro = e.errors()[0]["msg"] if isinstance(e, ValidationError) else str(e)
+            self.message.definir_mensagem(f"Erro ao alterar: {msg_erro}", tipo="error")
+            st.rerun()
 
     def obter_todos_setores(self):
         try:
             with get_db() as db:
-                pass
+                setores = SetorService.obter_todos_setores(db=db)
+                return setores
         except Exception as e:
-            self.message.definir_mensagem(f"Erro ao carregar fornecedores: {str(e)}", tipo="error")
+            self.message.definir_mensagem(f"Erro ao carregar setores: {str(e)}", tipo="error")
             return []
-
 
     def mudar_tela(self, status:bool = None):
         st.session_state[self.CADASTRO_SETOR] = status
+        self.limpar_dados()
         st.rerun()
+
+    def limpar_dados(self):
+        st.session_state[self.EDITANDO_SETOR] = None
+        st.session_state["setor_carregado_id"] = None
+
+        st.session_state["input_setor"] = ""
+        st.session_state["checkbox_ativo_setor"] = True
 
     def acao_botao_novo(self):
             self.limpar_dados()
