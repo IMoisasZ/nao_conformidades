@@ -9,8 +9,7 @@ from components.divider import Divider
 from components.mensagem import MensagemComponent
 
 from backend.src.connection.db_connection import get_db
-from backend.src.models.cliente_model import ClienteModel
-from backend.src.schemas.cliente_schema import ClienteResponse, ClienteCreate, ClienteUpdate
+from backend.src.schemas.cliente_schema import ClienteCreate, ClienteUpdate
 from backend.src.services.cliente_service import ClienteService
 
 class ClientePage:
@@ -152,7 +151,7 @@ class ClientePage:
                 st.rerun()
         except (ValueError, ValidationError) as e:
             msg_erro = e.errors()[0]["msg"] if isinstance(e, ValidationError) else str(e)
-            self.message.definir_mensagem(f"Erro ao cadastrar: {msg_erro}", tipo="error")
+            self.message.definir_mensagem(f"Erro ao alterar: {msg_erro}", tipo="error")
             st.rerun()
 
     def obter_todos_clientes(self):
@@ -161,7 +160,7 @@ class ClientePage:
                 clientes = ClienteService.obter_todos_clientes(db=db)
                 return clientes
         except Exception as e:
-            self.message.definir_mensagem(f"Erro ao carregar clinetes: {str(e)}", tipo="error")
+            self.message.definir_mensagem(f"Erro ao carregar clientes: {str(e)}", tipo="error")
             return []
 
     def mudar_tela(self, status:bool):

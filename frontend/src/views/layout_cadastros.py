@@ -5,7 +5,7 @@ from views.pages.empresa import EmpresaPage
 from views.pages.setor import SetorPage
 from views.pages.usuario import UsuarioPage
 from views.pages.cliente import ClientePage
-from views.pages.fornecdor import FornecedorPage
+from frontend.src.views.pages.fornecedor import FornecedorPage
 
 class LayoutCadastros:
     def __init__(self):
@@ -24,7 +24,7 @@ class LayoutCadastros:
             ClientePage().renderizar()
 
         with fornecedor:
-            FornecedorPage().rendereizar()
+            FornecedorPage().renderizar()
 
         with setor:
             SetorPage().renderizar()
