@@ -57,11 +57,11 @@ class ClienteService:
 
     @staticmethod
     def obter_cliente_pelo_nome(db:Session, nome_clinete:str) -> ClienteResponse:
-        cliente, msg = ClienteService.verificar_cliente_pelo_nome(db=db, nome_cliente=nome_clinete)
+        cliente, _ = ClienteService.verificar_cliente_pelo_nome(db=db, nome_cliente=nome_clinete)
         if cliente:
             return ClienteResponse.model_validate(cliente)
         else:
-            raise ValueError(msg)
+            raise ValueError(f"Cliente {nome_clinete} não encontrato.")
 
     @staticmethod
     def desativar_ativar_cliente(db:Session, cliente_id:int, status:bool) -> ClienteResponse:

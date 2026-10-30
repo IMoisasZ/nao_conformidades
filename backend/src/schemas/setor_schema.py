@@ -39,7 +39,6 @@ class SetorUpdate(BaseModel):
 class SetorResponse(BaseModel):
     id: int
     nome_setor: str
-    cnpj: str
     ativo: bool
     created_at: Optional[datetime] = None
     class Config:

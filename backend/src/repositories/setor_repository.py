@@ -35,15 +35,19 @@ class SetorRepository:
     @staticmethod
     def obter_setor_pelo_id(db:Session, setor_id:int) -> SetorModel | None:
         return db.query(SetorModel).filter(SetorModel.id == setor_id).first()
+
+    @staticmethod
+    def obter_setor_pelo_nome(db:Session, nome_setor:str) -> SetorModel | None:
+        return db.query(SetorModel).filter(SetorModel.nome_setor == nome_setor).first()
     
     @staticmethod
-    def desativar_ativar_Setor(db:Session, setor_id:int, status:bool) -> SetorModel:
+    def desativar_ativar_Setor(db:Session, db_setor:SetorModel, status:bool) -> SetorModel:
         try:
-            Setor = db.query(SetorModel).filter(SetorModel.id == setor_id).first()
-            Setor.ativo = status
+            setor = db_setor
+            setor.ativo = status
             db.commit()
-            db.refresh(Setor)
-            return Setor
+            db.refresh(setor)
+            return setor
         except SQLAlchemyError as e:
             db.rollback()
             raise e
