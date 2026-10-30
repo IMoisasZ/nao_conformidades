@@ -54,8 +54,8 @@ class FornecedorPage:
             if "input_fornecedor" not in st.session_state:
                 st.session_state["input_fornecedor"] = ""
 
-            if "checkbox_ativo" not in st.session_state:
-                st.session_state["checkbox_ativo"] = True
+            if "checkbox_ativo_fornecedor" not in st.session_state:
+                st.session_state["checkbox_ativo_fornecedor"] = True
 
         titulo_pagina = f"Editar fornecedor: {nome_padrao}" if is_edicao else "Cadastrar fornecedor"
         TitlePages(title_page=titulo_pagina,btn_nome="Lista de fornecedores", acao_btn=self.mudar_tela, parametro_acao=False).title()
@@ -69,7 +69,7 @@ class FornecedorPage:
         with fornecedor_col:
             fornecedor = InputComponent(label="Fornecedor", key="input_fornecedor").input()
         with ativo_col:
-            ativo = CheckboxComponent(label="Ativo", key="checkbox_ativo", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo", True)).checkbox()
+            ativo = CheckboxComponent(label="Ativo", key="checkbox_ativo_fornecedor", disabled=False if is_edicao else True, value=st.session_state.get("checkbox_ativo", True)).checkbox()
 
         Divider(color="gray").divider()
 
@@ -90,7 +90,7 @@ class FornecedorPage:
                     self.salvar_dados(fornecedor_dados=dados_fornecedor)
             except (ValueError, ValidationError) as e:
                             msg_erro = e.errors()[0]["msg"] if isinstance(e, ValidationError) else str(e)
-                            self.message.definir_mensagem(f"Erro ao cadastrar: {msg_erro}", tipo="error")
+                            self.message.definir_mensagem(f"Erro ao cadastrar/alterar: {msg_erro}", tipo="error")
                             st.rerun()
 
     def lista_view(self):
