@@ -19,15 +19,15 @@ from views.pages.usuario_setores import UsuarioSetoresPage
 
 class UsuarioPage:
     def __init__(self):
-        self.CADASTRO_USUARIO = "cadastro_usuario"
+        self.USUARIO_VIEW_ATUAL = "usuario_view_atual"
         self.EDITANDO_USUARIO = "editando_usuario"
         self.SENHA_DESATIVADA = "senha_desativada"
         self.ALTERACAO_SENHA = "alteracao_senha"
         self.MODAL_SENHA_ABERTA = "modal_senha_aberta"
         self.message = MensagemComponent(key_prefix="usuario")
         
-        if self.CADASTRO_USUARIO not in st.session_state:
-            st.session_state[self.CADASTRO_USUARIO] = False
+        if self.USUARIO_VIEW_ATUAL not in st.session_state:
+            st.session_state[self.USUARIO_VIEW_ATUAL] = "lista"
             
         if self.EDITANDO_USUARIO not in st.session_state:
             st.session_state[self.EDITANDO_USUARIO] = None
@@ -49,10 +49,18 @@ class UsuarioPage:
 
     def renderizar(self):
         self.message.exibir_mensagem()
-        if st.session_state[self.CADASTRO_USUARIO]:
-            self.cadastro_view()
-        else:
-            self.lista_view()
+        view = st.session_state.get(self.USUARIO_VIEW_ATUAL)
+
+        match view:
+            case "cadastro":
+                self.cadastro_view()
+            case "lista":
+                self.lista_view()
+            case "setores":
+                dados_usuario = st.session_state.get(self.EDITANDO_USUARIO)
+                usuario_id = dados_usuario["dados"].id
+                usuario_nome = dados_usuario["dados"].nome
+                UsuarioSetoresPage(usuario_id=usuario_id, usuario_nome=usuario_nome).renderizar()
 
     def cadastro_view(self):
         TitlePages(title_page="Usuários", btn_nome="Lista de usuários", acao_btn=self.mudar_tela, parametro_acao=False).title()
@@ -99,9 +107,9 @@ class UsuarioPage:
         
         Divider(color="gray").divider()
 
-        # 3. BOTÕES DE AÇÃO
+        # 4. BOTÕES DE AÇÃO
         if is_edicao:
-            btn_cadastro_col, btn_novo_col, btn_alterar_senha = st.columns(3, vertical_alignment="bottom")
+            btn_cadastro_col, btn_novo_col, btn_alterar_senha, btn_setores_col = st.columns(4, vertical_alignment="bottom")
             with btn_cadastro_col:
                 btn_cadastro_alteracao = ButtonComponent(label="Editar usuario", key="btn_cadastrar_alterar_usuario").btn()
             with btn_novo_col:
@@ -112,6 +120,8 @@ class UsuarioPage:
                     st.session_state["modal_usuario_id"] = id_padrao
                     st.session_state["modal_usuario_nome"] = nome
                     st.rerun()
+            with btn_setores_col:
+                btn_setores = ButtonComponent(label="Setores", onclick=self.mudar_tela_setores, args=["setores"], key="btn_setores").btn()
         else:
             btn_cadastro_col, btn_novo_col = st.columns(2, vertical_alignment="bottom")
             with btn_cadastro_col:
@@ -166,7 +176,7 @@ class UsuarioPage:
                     "Nome": user.nome,
                     "Email": user.email,
                     "Tipo usuario": user.tipo_usuario,
-                    "Ativo": user.ativo
+                    "Ativo": "Ativo" if user.ativo else "Inativo"
                 }
                 for user in usuarios
             ]
@@ -183,7 +193,7 @@ class UsuarioPage:
                     "dados": usuario_selecionado
                 }
 
-                st.session_state[self.CADASTRO_USUARIO] = True
+                st.session_state[self.USUARIO_VIEW_ATUAL] = "cadastro"
                 st.session_state[self.SENHA_DESATIVADA] = True
                 st.rerun()
 
@@ -196,7 +206,7 @@ class UsuarioPage:
                 # 1. Limpa apenas as flags de navegação e controle
                 st.session_state[self.EDITANDO_USUARIO] = None
                 st.session_state["usuario_carregado_id"] = None
-                st.session_state[self.CADASTRO_USUARIO] = False
+                st.session_state[self.USUARIO_VIEW_ATUAL] = "lista"
                 
                 # 2. Força o recarregamento imediato para zerar os widgets no próximo frame
                 st.rerun()
@@ -220,7 +230,7 @@ class UsuarioPage:
                 # 1. Limpa apenas as flags de navegação e controle
                 st.session_state[self.EDITANDO_USUARIO] = None
                 st.session_state["usuario_carregado_id"] = None
-                st.session_state[self.CADASTRO_USUARIO] = False
+                st.session_state[self.USUARIO_VIEW_ATUAL] = "lista"
                 
                 # 2. Força o recarregamento imediato
                 st.rerun()
@@ -244,9 +254,13 @@ class UsuarioPage:
             self.message.definir_mensagem(f"Erro ao carregar empresas: {str(e)}", tipo="error")
             return []             
 
-    def mudar_tela(self, status: bool):
-        st.session_state[self.CADASTRO_USUARIO] = status
+    def mudar_tela(self, view: str):
+        st.session_state[self.USUARIO_VIEW_ATUAL] = view
         self.limpar_dados()
+        st.rerun()
+
+    def mudar_tela_setores(self, view: str):
+        st.session_state[self.USUARIO_VIEW_ATUAL] = view
         st.rerun()
 
     def limpar_dados(self):
@@ -388,7 +402,3 @@ class UsuarioPage:
             return (False, "As senhas não conferem!")
         else:
             return (True, "")
-
-    def carregar_usuarios_page(self, usuario_id:int, nome_usuario:str):
-        usuario_setor = UsuarioSetoresPage(usuario_id=usuario_id, usuario_nome=nome_usuario)
-        usuario_setor.renderizar()
