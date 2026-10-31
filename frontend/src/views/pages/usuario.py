@@ -14,6 +14,7 @@ from backend.src.connection.db_connection import get_db
 from backend.src.models.usuario_model import TipoUsuario
 from backend.src.schemas.usuario_schema import UsuarioCreate, UsuarioUpdate, UsuarioUpdateSenha, UsuarioResponse
 from backend.src.services.usuario_service import UsuarioService
+from views.pages.usuario_setores import UsuarioSetoresPage
 
 
 class UsuarioPage:
@@ -93,7 +94,7 @@ class UsuarioPage:
             senha = InputComponent(label="Senha", type="password", placeholder="Informe a senha de 5 numeros...", key="input_senha_usuario", disabled=is_edicao).input()
         with confirmacao_col:
             confirmacao_senha = InputComponent(label="Confirmação da senha", type="password", placeholder="Confirme a senha informada...", disabled=is_edicao, key="input_confirmacao_senha").input()
-        
+
         ativo = CheckboxComponent(label="Ativo", value=True, disabled=False if st.session_state[self.EDITANDO_USUARIO] else True).checkbox()
         
         Divider(color="gray").divider()
@@ -387,3 +388,7 @@ class UsuarioPage:
             return (False, "As senhas não conferem!")
         else:
             return (True, "")
+
+    def carregar_usuarios_page(self, usuario_id:int, nome_usuario:str):
+        usuario_setor = UsuarioSetoresPage(usuario_id=usuario_id, usuario_nome=nome_usuario)
+        usuario_setor.renderizar()
