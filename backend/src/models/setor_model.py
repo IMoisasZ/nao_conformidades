@@ -1,11 +1,13 @@
 """Módulo de Modelo ORM para Setores.
 
 Este módulo define a entidade `SetorModel` mapeada para a tabela `setores`
-no banco de dados através do SQLAlchemy.
+no banco de dados através do SQLAlchemy, incluindo os relacionamentos N:N.
 """
 
 from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
+
 from backend.src.connection.db_connection import Base
 
 
@@ -18,6 +20,8 @@ class SetorModel(Base):
         ativo (bool): Status do cadastro (padrão True).
         created_at (datetime): Data/hora UTC de criação do registro.
         updated_at (datetime): Data/hora UTC da última atualização do registro.
+        usuarios_vinculados (list[UsuarioSetorModel]): Relação de associações 
+            com os usuários responsáveis vinculados através da tabela pivô.
     """
 
     __tablename__ = "setores"
@@ -32,6 +36,13 @@ class SetorModel(Base):
         DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    # Relacionamento com a tabela associativa (N:N)
+    usuarios_vinculados = relationship(
+        "UsuarioSetorModel", 
+        back_populates="setor", 
+        cascade="all, delete-orphan"
     )
 
     def to_dict(self) -> dict[str, str | int]:
