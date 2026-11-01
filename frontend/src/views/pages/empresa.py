@@ -110,7 +110,7 @@ class EmpresaPage:
                 st.session_state[self.CADASTRO_EMPRESA] = True
                 st.rerun()
         else:
-            self.message.definir_mensagem("Nenhuma empresa cadastrada.", tipo="info")
+            st.write(" ### Não há empresas cadastradas!")
         
     def salvar_dados(self, dados:EmpresaCreate):
         try:

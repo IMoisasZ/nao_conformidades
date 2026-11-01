@@ -4,7 +4,7 @@ Este módulo define a entidade `SetorModel` mapeada para a tabela `setores`
 no banco de dados através do SQLAlchemy, incluindo os relacionamentos N:N.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -18,8 +18,8 @@ class SetorModel(Base):
         id (int): Chave primária autoincrementável do setor.
         nome_setor (str): Nome do setor (único e obrigatório, máx. 150 caracteres).
         ativo (bool): Status do cadastro (padrão True).
-        created_at (datetime): Data/hora UTC de criação do registro.
-        updated_at (datetime): Data/hora UTC da última atualização do registro.
+        created_at (datetime): Data/hora de criação do registro.
+        updated_at (datetime): Data/hora da última atualização do registro.
         usuarios_vinculados (list[UsuarioSetorModel]): Relação de associações 
             com os usuários responsáveis vinculados através da tabela pivô.
     """
@@ -29,13 +29,11 @@ class SetorModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nome_setor = Column(String(150), nullable=False, unique=True)
     ativo = Column(Boolean, default=True)
-    created_at = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
-    )
+    created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=datetime.now,
+        onupdate=datetime.now,
     )
 
     # Relacionamento com a tabela associativa (N:N)
@@ -58,3 +56,7 @@ class SetorModel(Base):
             "Setor": self.nome_setor,
             "Ativo": "Ativo" if self.ativo else "Inativo",
         }
+
+
+# Importação no final para registrar a classe no mappers sem criar importação circular no topo
+from backend.src.models.usuario_setor_model import UsuarioSetorModel  # noqa: F401, E402
