@@ -164,7 +164,7 @@ class UsuarioPage:
             )
 
     def lista_view(self):
-        TitlePages(title_page="Usuários", btn_nome="Cadastrar usuário", acao_btn=self.mudar_tela, parametro_acao=True).title()
+        TitlePages(title_page="Usuários", btn_nome="Cadastrar usuário", acao_btn=self.mudar_tela, parametro_acao="cadastro").title()
 
         usuarios = self.obter_todos_usuarios()
 
@@ -196,6 +196,8 @@ class UsuarioPage:
                 st.session_state[self.USUARIO_VIEW_ATUAL] = "cadastro"
                 st.session_state[self.SENHA_DESATIVADA] = True
                 st.rerun()
+        else:
+            st.write(" ### Não há usuários cadastrados!")
 
     def salvar_dados(self, dados: UsuarioCreate):
         try:

@@ -24,13 +24,12 @@ class UsuarioSetoresPage:
             st.session_state[self.EDITANDO_USUARIO_SETOR] = None
 
     def renderizar(self):
-        print(self.usuario_nome)
         lista_setores = self.obter_todos_setores()
         
         TitlePages(title_page=f"Associar setores ao usuário {self.usuario_nome}", btn_nome="Voltar para lista de usuarios", acao_btn=self.mudar_tela, parametro_acao="lista", tamanho_cols=[7, 1, 2]).title()
         setor_col, btn_incluir_col, btn_remover, espaco = st.columns([4,2, 2, 4], vertical_alignment="bottom")
         with setor_col:
-            SelectComponent(label="Setores", options={s.nome_setor: s.id for s in lista_setores} if lista_setores else []).select()
+            SelectComponent(label="Setores", options={s.nome_setor: s.id for s in lista_setores} if lista_setores else []).multiselect()
         with btn_incluir_col:
             ButtonComponent(label="Incluir").btn()
         with btn_remover:
@@ -38,7 +37,6 @@ class UsuarioSetoresPage:
 
         Divider(color="gray").divider()
 
-        st.dataframe(data=[{"Setor": ""}])
 
     def obter_todos_setores(self):
         try:

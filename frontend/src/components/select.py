@@ -13,4 +13,7 @@ class SelectComponent:
         if self.value in self.options:
             index_padrao = self.options.index(self.value)
         return st.selectbox(label=self.label, options=self.options, index=index_padrao, disabled=self.disabled, key=self.key)
+    
+    def multiselect(self):
+        return st.multiselect(label=self.label, options=self.options, disabled=self.disabled, key=self.key)
         
