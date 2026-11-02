@@ -2,14 +2,14 @@ import streamlit as st
 
 from components.tab import TabComponent
 
-from views.pages.dados_iniciais import DadosInciais
-from views.pages.nao_conformidade import NaoConformidade
-from views.pages.imagens import Imagens
-from views.pages.disposicao_nc import DisposicaoNc
-from views.pages.causa_nc import CausaNc
-from views.pages.reinspecao import Reinspecao
-from views.pages.plano_acao import PlanoAcao
-from views.pages.lista_rnc import ListaRnc
+from views.pages.rnc.dados_iniciais import DadosInciais
+from views.pages.rnc.nao_conformidade import NaoConformidade
+from views.pages.rnc.imagens import Imagens
+from views.pages.rnc.disposicao_nc import DisposicaoNc
+from views.pages.rnc.causa_nc import CausaNc
+from views.pages.rnc.reinspecao import Reinspecao
+from views.pages.rnc.plano_acao import PlanoAcao
+from views.pages.rnc.lista_rnc import ListaRnc
 from components.input import InputComponent
 from components.button import ButtonComponent
 

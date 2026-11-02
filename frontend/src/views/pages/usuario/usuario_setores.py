@@ -1,15 +1,14 @@
-import streamlit as st
+"""Módulo da Página de Associação de Setores ao Usuário (Frontend Streamlit)."""
 
-from components.button import ButtonComponent
-from components.divider import Divider
-from components.mensagem import MensagemComponent
-from components.select import SelectComponent
-from components.title_page import TitlePages
+import streamlit as st
 
 from backend.src.connection.db_connection import get_db
 from backend.src.schemas.usuario_setor_schema import UsuarioSetorLoteRequest
 from backend.src.services.setor_service import SetorService
 from backend.src.services.usuario_setor_service import UsuarioSetorService
+from components.mensagem import MensagemComponent
+from components.select import SelectComponent
+from components.title_page import TitlePages
 
 
 class UsuarioSetoresPage:
@@ -38,8 +37,6 @@ class UsuarioSetoresPage:
             tamanho_cols=[7, 1, 2],
         ).title()
 
-        setor_col, btn_salvar_col = st.columns([7, 1], vertical_alignment="bottom")
-
         # Dicionário mapeando Nome -> ID do setor
         opcoes_setores = (
             {s.nome_setor: s.id for s in lista_setores_cadastrados}
@@ -52,19 +49,26 @@ class UsuarioSetoresPage:
             s.nome_setor for s in setores_atuais_usuario
         ]
 
-        with setor_col:
-            setores_selecionados = SelectComponent(
-                label="Setores sob responsabilidade",
-                options=opcoes_setores,
-                default=nomes_pre_selecionados,
-            ).multiselect()
-
-        with btn_salvar_col:
-            btn_salvar = st.button(
-                label="Salvar Setores", 
-                icon="💾", 
-                width="stretch"
+        # Form para congelar os valores do multiselect até o clique de salvamento
+        with st.form(key="form_usuario_setores", clear_on_submit=False):
+            setor_col, btn_salvar_col = st.columns(
+                [7, 1], vertical_alignment="bottom"
             )
+
+            with setor_col:
+                setores_selecionados = SelectComponent(
+                    label="Setores sob responsabilidade",
+                    options=opcoes_setores,
+                    default=nomes_pre_selecionados,
+                ).multiselect()
+
+            with btn_salvar_col:
+                btn_salvar = st.form_submit_button(
+                    label="Salvar Setores",
+                    icon="💾",
+                    width="stretch",
+                    type="primary",
+                )
 
         if btn_salvar:
             ids_selecionados = []
@@ -108,10 +112,13 @@ class UsuarioSetoresPage:
                     db=db, dados=payload
                 )
 
-            self.message.definir_mensagem("Setores atualizados com sucesso!", tipo="success")
+            self.message.definir_mensagem(
+                "Setores atualizados com sucesso!", tipo="success"
+            )
             st.rerun()
         except Exception as e:
             st.error(f"Erro ao salvar setores no banco de dados: {str(e)}")
 
     def mudar_tela(self, view: str):
         st.session_state[self.USUARIO_VIEW_ATUAL] = view
+        st.rerun()

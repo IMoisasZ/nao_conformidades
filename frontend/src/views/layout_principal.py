@@ -3,7 +3,7 @@ import streamlit as st
 from views.layout_menu import LayoutMenu
 from views.layout_cadastros import LayoutCadastros
 from views.layout_rnc import LayoutRnc
-from views.pages.lista_rnc import ListaRnc
+from views.pages.rnc.lista_rnc import ListaRnc
 
 from components.header import HeaderComponent
 

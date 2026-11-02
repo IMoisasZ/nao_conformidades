@@ -13,8 +13,8 @@ from backend.src.services.usuario_service import UsuarioService
 from components.divider import Divider
 from components.mensagem import MensagemComponent
 from components.title_page import TitlePages
-from views.pages.usuario_alterar_senha import UsuarioAlterarSenhaPage
-from views.pages.usuario_setores import UsuarioSetoresPage
+from frontend.src.views.pages.usuario.usuario_alterar_senha import UsuarioAlterarSenhaPage
+from frontend.src.views.pages.usuario.usuario_setores import UsuarioSetoresPage
 
 
 class UsuarioPage:
@@ -173,23 +173,17 @@ class UsuarioPage:
             with col_btn_novo:
                 st.button(
                     label="Novo",
-                    use_container_width=True,
+                    width="stretch",
                     on_click=self.limpar_dados,
                 )
             with col_btn_alterar_senha:
-                if st.button("Alterar senha", use_container_width=True):
+                if st.button("Alterar senha", width="stretch"):
                     st.session_state[self.USUARIO_VIEW_ATUAL] = "alterar_senha"
                     st.rerun()
             with col_btn_setores:
-                if st.button("Setor(es) sob responsabilidade", use_container_width=True):
+                if st.button("Setor(es) sob responsabilidade", width="stretch"):
                     st.session_state[self.USUARIO_VIEW_ATUAL] = "setores"
                     st.rerun()
-        else:
-            st.button(
-                label="Novo",
-                use_container_width=True,
-                on_click=self.limpar_dados,
-            )
 
         # 4. PROCESSAMENTO DO SUBMIT
         if btn_cadastrar_alterar:
@@ -282,7 +276,7 @@ class UsuarioPage:
             ]
             evento_selecao = st.dataframe(
                 data=dados_usuarios,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 on_select="rerun",
                 selection_mode="single-row",

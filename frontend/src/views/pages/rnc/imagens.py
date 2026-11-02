@@ -97,7 +97,7 @@ class Imagens:
                         # Renderiza a imagem ocupando a largura total da coluna
                         ImageComponent(
                             image=item["caminho"], 
-                            use_container_width=True
+                            width="stretch"
                         ).img()
 
                         # Botão de remoção individual abaixo da respectiva foto

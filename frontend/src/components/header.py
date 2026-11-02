@@ -2,7 +2,7 @@ import streamlit as st
 
 from components.input import InputComponent
 from components.button import ButtonComponent
-from views.pages.dados_iniciais import DadosInciais
+from frontend.src.views.pages.rnc.dados_iniciais import DadosInciais
 class HeaderComponent:
     def __init__(self, label:str="nome_header", divider:bool=False, width="stretch", text_alignment:str="center"):
         self.label = label

@@ -55,7 +55,7 @@ class UsuarioAlterarSenhaPage:
             with col_btn_alterar:
                 btn_alterar = st.form_submit_button(
                     label="Alterar Senha",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary",
                 )
 
