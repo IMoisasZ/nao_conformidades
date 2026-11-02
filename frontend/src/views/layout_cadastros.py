@@ -3,7 +3,7 @@ import streamlit as st
 from components.tab import TabComponent
 from views.pages.empresa import EmpresaPage
 from views.pages.setor import SetorPage
-from views.pages.usuario import UsuarioPage
+from frontend.src.views.pages.usuario import UsuarioPage
 from views.pages.cliente import ClientePage
 from frontend.src.views.pages.fornecedor import FornecedorPage
 

@@ -34,7 +34,7 @@ class UsuarioSetorService:
                 db=db, usuario_id=dados.usuario_id
             )
 
-            UsuarioSetorRepository.deletar_setores_por_usuario(
+            UsuarioSetorRepository.remover_usuario_setor(
                 db=db, usuario_id=dados.usuario_id
             )
 
@@ -56,7 +56,7 @@ class UsuarioSetorService:
 
         # Busca e retorna a lista de vínculos atualizada do usuário
         vinculos_atualizados = (
-            UsuarioSetorRepository.obter_setores_por_usuario(
+            UsuarioSetorRepository.obter_todos_usuarios_setores(
                 db=db, usuario_id=dados.usuario_id
             )
         )
@@ -67,7 +67,7 @@ class UsuarioSetorService:
         ]
 
     @staticmethod
-    def obter_todos_usuario_setor(
+    def obter_todos_usuarios_setores(
         db: Session, usuario_id: int, skip: int = 0, limit: int = 100
     ) -> list[UsuarioSetorResponse]:
         """Retorna todos os vínculos de um usuário paginados."""

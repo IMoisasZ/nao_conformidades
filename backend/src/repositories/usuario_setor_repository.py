@@ -23,8 +23,6 @@ class UsuarioSetorRepository:
             return (
                 db.query(UsuarioSetorModel).filter(UsuarioSetorModel.usuario_id == usuario_id).delete(synchronize_session=False)
             )
-            
-            
         except SQLAlchemyError as e:
             db.rollback()
             raise e
