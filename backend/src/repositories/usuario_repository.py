@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from backend.src.models.usuario_model import UsuarioModel
@@ -57,3 +58,7 @@ class UsuarioRepository:
         except SQLAlchemyError as e:
             db.rollback()
             raise e
+        
+    @staticmethod
+    def obter_maior_codigo(db: Session) -> int | None:
+        return db.query(func.max(UsuarioModel.codigo)).scalar()

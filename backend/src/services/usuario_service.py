@@ -1,3 +1,4 @@
+import os
 from sqlalchemy.orm import Session
 from backend.src.models.usuario_model import UsuarioModel
 from backend.src.repositories.usuario_repository import UsuarioRepository
@@ -34,9 +35,9 @@ class UsuarioService:
         return usuario
 
     @staticmethod
-    def verificar_usuario_pelo_codigo(db:Session, codigo_usuario: int, usuario_id_atual: int | None = None) -> bool:
+    def verificar_usuario_pelo_codigo(db:Session, codigo_usuario: int, usuario_id_atual: int | None = None) -> bool | str:
         if codigo_usuario is None:
-            return True
+            return "vazio"
         
         usuario = UsuarioRepository.obter_usuario_pelo_codigo(db=db, codigo_usuario=codigo_usuario)
 
@@ -47,9 +48,18 @@ class UsuarioService:
     @staticmethod
     def criar_usuario(db:Session, usuario_dados:UsuarioCreate) -> UsuarioResponse:
         UsuarioService.verificar_usuario_pelo_email(db=db, email=usuario_dados.email)
-        UsuarioService.verificar_usuario_pelo_codigo(db=db, codigo_usuario=usuario_dados.codigo)
+        codigo_vazio = UsuarioService.verificar_usuario_pelo_codigo(db=db, codigo_usuario=usuario_dados.codigo)
         
         usuario_dict = usuario_dados.model_dump()
+        
+        if codigo_vazio == "vazio":
+            ultimo_codigo = UsuarioRepository.obter_maior_codigo(db=db) 
+            codigo_incial_env = int(os.getenv("CODIGO_USUARIO_INICIAL", 487))
+            if ultimo_codigo is not None and ultimo_codigo >= codigo_incial_env:
+                usuario_dict["codigo"] = ultimo_codigo + 1
+            else:
+                usuario_dict["codigo"] = codigo_incial_env
+        
         novo_usuario = UsuarioRepository.criar_usuario(db=db, dados_usuario=usuario_dict)
         return UsuarioResponse.model_validate(novo_usuario)
     
