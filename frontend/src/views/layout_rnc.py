@@ -26,6 +26,14 @@ class LayoutRnc:
         self.cadastro_view()
 
     def cadastro_view(self):
+        st.markdown(
+        """
+            <div style="border-bottom: 1px solid orange; margin-bottom: 8px">
+                <h1 style="text-align: center">Relatório de não conformidade</h1>
+            </div>
+        """,
+        unsafe_allow_html=True 
+        )
         dados_rnc, dados_data, dados_status, btn_lista_rnc_col, btn_salvar = st.columns([1,1,2,1,1], vertical_alignment="bottom")
         with dados_rnc:
             rnc_numero = InputComponent(label="Numero RNC", disabled=True, ).input()

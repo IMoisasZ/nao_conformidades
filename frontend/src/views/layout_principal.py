@@ -15,7 +15,7 @@ class LayoutPrincipal:
 
     def renderizar(self):
         LayoutMenu().renderizar()
-        HeaderComponent(label="Relatório de Não Conformidade - (RNC)").header_padrao()
+        HeaderComponent(label="Sistema Injetaq").header_padrao()
 
         pagina = st.session_state[self.PAGINA_ATIVA]
 
