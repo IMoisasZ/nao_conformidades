@@ -1,9 +1,13 @@
 import streamlit as st
+from pydantic import ValidationError
 
 from components.mensagem import MensagemComponent
 from components.title_page import TitlePages
 from components.divider import Divider
 
+from backend.src.connection.db_connection import get_db
+from backend.src.schemas.operacao_schema import OperacaoCreate, OperacaoUpdate
+from backend.src.services.operacao_service import OperacaoService
 class OperacaoPage:
     def __init__(self):
         self.CADASTRO_OPERACAO = "cadastro_operacao"
@@ -39,7 +43,7 @@ class OperacaoPage:
                 nome_padrao = operacao_dados.get("nome_operacao") or operacao_dados.get("Operacao") or operacao_dados.get("operacao") or ""
                 ativo_padrao = operacao_dados.get("ativo", True)
             else:
-                ativo_padrao = None
+                id_padrao = None
                 is_edicao = False
                 nome_padrao = ""
                 ativo_padrao = True
@@ -55,20 +59,40 @@ class OperacaoPage:
             col_nome_operacao, col_ativo, espaco = st.columns([6,2,4], vertical_alignment="bottom")
             
             with col_nome_operacao:
-                st.text_input(label="Operação", value=nome_padrao, placeholder="Informe o nome da operação...", key="input_operacao")
+                operacao = st.text_input(label="Operação", value=nome_padrao, placeholder="Informe o nome da operação...", key="input_operacao")
             with col_ativo:
-                st.checkbox(label="Ativo", value=ativo_padrao, disabled=not is_edicao, key="checkbox_operacao_ativo")
+                ativo = st.checkbox(label="Ativo", value=ativo_padrao, disabled=not is_edicao, key="checkbox_operacao_ativo")
         
             Divider(color="gray").divider()
             
-            st.form_submit_button(label="Editar operação" if is_edicao else "Cadastrar operaçao", key="btn_cadastrar_editar_operacao", type="primary")
+            btn_cadastrar_alterar_operacao = st.form_submit_button(label="Editar operação" if is_edicao else "Cadastrar operaçao", key="btn_cadastrar_editar_operacao", type="primary")
         if is_edicao:    
             st.button(
                 label="Novo", 
                 width="stretch", 
                 on_click=self.limpar_dados
             )
+            
+        if btn_cadastrar_alterar_operacao:
+            operacao_str = (operacao or "").strip()
         
+            try:
+                if is_edicao:
+                    dados_operacao = OperacaoUpdate(id=id_padrao, nome_operacao=operacao_str, ativo=ativo)
+                    self.alterar_dados(operacao_id=id_padrao, operacao_dados=dados_operacao)
+                else:
+                    dados_operacao = OperacaoCreate(nome_operacao=operacao_str, ativo=ativo)
+                    self.salvar_dados(operacao_dados=dados_operacao)
+            except (ValueError, ValidationError) as e:
+                msg_erro = (
+                    e.errors()[0]["msg"]
+                    if isinstance(e, ValidationError)
+                    else str(e)
+                )
+                self.message.definir_mensagem(
+                    f"Erro ao cadastrar/alterar: {msg_erro}", tipo="error"
+                )
+                
     def lista_view(self):
         TitlePages(title_page="Lista de operações", btn_nome="Cadastrar operação", acao_btn=self.mudar_tela, parametro_acao=True).title()
         
@@ -77,13 +101,14 @@ class OperacaoPage:
         if operacoes:
             dados_operacao = [
                 {
-                    "ID": "",
-                    "Operação": "",
-                    "Ativo": ""
+                    "ID": op.id,
+                    "Operação": op.nome_operacao,
+                    "Ativo": "Ativo" if op.ativo else "Inativo"
                 }
+                for op in operacoes
             ]
             evento_selecao = st.dataframe(data=dados_operacao, on_select="rerun", hide_index=True, selection_mode="single-row")
-            linha_selecionada = evento_selecao.get("selection", []).get("rows", {})
+            linha_selecionada = evento_selecao.get("selection", {}).get("rows", [])
             
             if linha_selecionada:
                 indice = linha_selecionada[0]
@@ -95,16 +120,61 @@ class OperacaoPage:
                 }
                 st.session_state[self.CADASTRO_OPERACAO] = True
                 st.rerun()
-        
         else:
             st.write("### Não há operações cadastradas!")
+    
+    def salvar_dados(self, operacao_dados:OperacaoCreate):
+            try:
+                with get_db() as db:
+                    nova_operacao = OperacaoService.criar_operacao(db=db, operacao_dados=operacao_dados)
+                    self.message.definir_mensagem(f"A operação {nova_operacao.nome_operacao} foi cadastrada com sucesso", tipo="success")
+                    self.mudar_tela(status=False)
+            except (ValueError, ValidationError) as e:
+                msg_erro = (
+                    e.errors()[0]["msg"]
+                    if isinstance(e, ValidationError)
+                    else str(e)
+                )
+                self.message.definir_mensagem(
+                    f"Erro ao cadastrar: {msg_erro}", tipo="error"
+                )
+                
+    def alterar_dados(self, operacao_id:int, operacao_dados: OperacaoUpdate):
+        try:
+            with get_db() as db:
+                operacao_atualizada = OperacaoService.alterar_operacao(db=db, operacao_id=operacao_id, dados_operacao=operacao_dados)
+                self.message.definir_mensagem(f"A operação {operacao_atualizada.nome_operacao} foi atualizada com sucesso!", tipo="success")
+                self.mudar_tela(status=False)
+        except (ValueError, ValidationError) as e:
+            msg_erro = (
+                e.errors()[0]["msg"]
+                if isinstance(e, ValidationError)
+                else str(e)
+            )
+            self.message.definir_mensagem(
+                f"Erro ao alterar: {msg_erro}", tipo="error"
+            )
             
+    def obter_todas_operacoes(self):
+        try:
+            with get_db() as db:
+                operacoes = OperacaoService.obter_todas_operacoes(db=db)
+                return operacoes
+        except Exception as e:
+            self.message.definir_mensagem(
+                f"Erro ao carregar operações: {str(e)}", tipo="error"
+            )
+            return []
+    
     def mudar_tela(self, status:bool):
+        self.limpar_dados()
         st.session_state[self.CADASTRO_OPERACAO] = status
         st.rerun()
         
-    def obter_todas_operacoes(self):
-        pass
+    def limpar_dados(self):
+        st.session_state[self.EDITANDO_OPERACAO] = None
+        st.session_state.pop("operacao_carregado_id", None)
+        
             
             
         
