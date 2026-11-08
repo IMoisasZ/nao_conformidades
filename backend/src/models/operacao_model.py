@@ -6,6 +6,7 @@ utilizada para mapear as operações fabris associadas ao apontamento de horas n
 
 from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 
 from backend.src.connection.db_connection import Base
 
@@ -32,6 +33,8 @@ class OperacaoModel(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+    
+    horas_utilizadas = relationship("HorasUtilizadasModel", back_populates="operacao")
 
     def to_dict(self) -> dict:
         """Converte a instância do modelo em um dicionário formatado para exibição na interface.
