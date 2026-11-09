@@ -26,7 +26,7 @@ class TipoNC(str, enum.Enum):
     RETRABALHO = "Retrabalho"
 
 
-class CodigoNC(Base):
+class CodigoNCModel(Base):
     """Modelo ORM para a tabela `cadastro_codigo_nc`.
 
     Mapeia os códigos e descrições padronizadas das não conformidades,

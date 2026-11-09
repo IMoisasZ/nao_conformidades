@@ -7,7 +7,7 @@ views/controllers e a camada de repositório da entidade Código de Não Conform
 
 from sqlalchemy.orm import Session
 
-from backend.src.models.codigo_nc_model import CodigoNC
+from backend.src.models.codigo_nc_model import CodigoNCModel
 from backend.src.repositories.codigo_nc_repository import CodigoNCRepository
 from backend.src.schemas.codigo_nc_schema import (
     CodigoNCCreate,

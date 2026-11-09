@@ -1,4 +1,5 @@
 import sys
+import backend.src.models
 from backend.src.connection.db_connection import init_db
 from pathlib import Path
 import streamlit as st

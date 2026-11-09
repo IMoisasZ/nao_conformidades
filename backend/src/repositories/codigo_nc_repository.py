@@ -7,7 +7,7 @@ alteração e consulta de dados referentes à tabela `cadastro_codigo_nc` no ban
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from backend.src.models.codigo_nc_model import CodigoNC
+from backend.src.models.codigo_nc_model import CodigoNCModel
 
 
 class CodigoNCRepository:
@@ -17,7 +17,7 @@ class CodigoNCRepository:
     """
 
     @staticmethod
-    def criar_codigo_nc(db: Session, dados_codigo_nc: dict) -> CodigoNC:
+    def criar_codigo_nc(db: Session, dados_codigo_nc: dict) -> CodigoNCModel:
         """Cria um novo registro de código de não conformidade no banco de dados.
 
         Args:
@@ -42,8 +42,8 @@ class CodigoNCRepository:
 
     @staticmethod
     def alterar_codigo_nc(
-        db: Session, db_codigo_nc: CodigoNC, dados_codigo_nc: dict
-    ) -> CodigoNC:
+        db: Session, db_codigo_nc: CodigoNCModel, dados_codigo_nc: dict
+    ) -> CodigoNCModel:
         """Altera os dados de um código de não conformidade existente no banco de dados.
 
         Args:
@@ -71,7 +71,7 @@ class CodigoNCRepository:
     @staticmethod
     def obter_todos_codigos_nc(
         db: Session, skip: int = 0, limit: int = 100
-    ) -> list[CodigoNC]:
+    ) -> list[CodigoNCModel]:
         """Recupera a lista paginada de todos os códigos de não conformidade cadastrados.
 
         Args:
@@ -82,12 +82,12 @@ class CodigoNCRepository:
         Returns:
             list[CodigoNC]: Lista contendo as instâncias de `CodigoNC`.
         """
-        return db.query(CodigoNC).offset(skip).limit(limit).all()
+        return db.query(CodigoNCModel).offset(skip).limit(limit).all()
 
     @staticmethod
     def obter_todos_codigos_nc_ativos(
         db: Session, skip: int = 0, limit: int = 100
-    ) -> list[CodigoNC]:
+    ) -> list[CodigoNCModel]:
         """Recupera a lista paginada apenas dos códigos de não conformidade ativos.
 
         Args:
@@ -99,8 +99,8 @@ class CodigoNCRepository:
             list[CodigoNC]: Lista contendo as instâncias de `CodigoNC` ativos.
         """
         return (
-            db.query(CodigoNC)
-            .filter(CodigoNC.ativo == True)
+            db.query(CodigoNCModel)
+            .filter(CodigoNCModel.ativo == True)
             .offset(skip)
             .limit(limit)
             .all()
@@ -109,7 +109,7 @@ class CodigoNCRepository:
     @staticmethod
     def obter_codigo_nc_pelo_id(
         db: Session, codigo_nc_id: int
-    ) -> CodigoNC | None:
+    ) -> CodigoNCModel | None:
         """Busca um código de não conformidade pela sua chave primária (ID).
 
         Args:
@@ -119,12 +119,12 @@ class CodigoNCRepository:
         Returns:
             CodigoNC | None: Instância do modelo ORM se encontrado, ou None.
         """
-        return db.query(CodigoNC).filter(CodigoNC.id == codigo_nc_id).first()
+        return db.query(CodigoNCModel).filter(CodigoNCModel.id == codigo_nc_id).first()
 
     @staticmethod
     def obter_codigo_nc_pela_descricao(
         db: Session, descricao: str
-    ) -> CodigoNC | None:
+    ) -> CodigoNCModel | None:
         """Busca um código de não conformidade através da sua descrição.
 
         Args:
@@ -135,15 +135,15 @@ class CodigoNCRepository:
             CodigoNC | None: Instância do modelo ORM se encontrado, ou None.
         """
         return (
-            db.query(CodigoNC)
-            .filter(CodigoNC.descricao == descricao)
+            db.query(CodigoNCModel)
+            .filter(CodigoNCModel.descricao == descricao)
             .first()
         )
 
     @staticmethod
     def desativar_ativar_codigo_nc(
-        db: Session, db_codigo_nc: CodigoNC, status: bool
-    ) -> CodigoNC:
+        db: Session, db_codigo_nc: CodigoNCModel, status: bool
+    ) -> CodigoNCModel:
         """Altera o status de ativação (`ativo`) de um código de não conformidade.
 
         Args:

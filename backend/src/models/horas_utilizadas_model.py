@@ -28,7 +28,8 @@ class HorasUtilizadasModel(Base):
     __tablename__ = "horas_utilizadas"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    rnc_id = Column(Integer, ForeignKey("rncs.id"), nullable=False)
+    # rnc_id = Column(Integer, ForeignKey("rncs.id"), nullable=False)
+    rnc_id = Column(Integer)
     operacao_id = Column(Integer, ForeignKey("operacoes.id"), nullable=False)
     qtde_horas = Column(Float, nullable=False, default=0.0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -38,11 +39,11 @@ class HorasUtilizadasModel(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    rnc = relationship("RNCModel", backref="horas_utilizadas", lazy="joined")
+    # rnc = relationship("RNCModel", backref="horas_utilizadas", lazy="joined")
     operacao = relationship(
-        "OperacaoModel", backref="horas_utilizadas", lazy="joined"
+    "OperacaoModel", back_populates="horas_utilizadas", lazy="joined"
     )
-
+    
     def to_dict(self) -> dict:
         """Converte a instância do modelo em um dicionário para a interface.
 

@@ -34,7 +34,9 @@ class OperacaoModel(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
     
-    horas_utilizadas = relationship("HorasUtilizadasModel", back_populates="operacao")
+    horas_utilizadas = relationship(
+    "HorasUtilizadasModel", back_populates="operacao"
+    )
 
     def to_dict(self) -> dict:
         """Converte a instância do modelo em um dicionário formatado para exibição na interface.
