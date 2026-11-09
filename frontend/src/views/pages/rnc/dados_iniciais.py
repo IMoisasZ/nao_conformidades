@@ -101,17 +101,6 @@ class DadosInciais:
             clientes = self.obter_todos_clientes()
             cliente = SelectComponent(label="Cliente", options=[item.nome_cliente for item in clientes] if origem == "Cliente" else [], disabled=True if origem != "Cliente" else False, value=dados.get("cliente")).select()
             dados["cliente"] = cliente
-        st.divider()
-
-        hrs_utilizadas_col, btn, qtde_rejeitada_col, espaco = st.columns([2,2,2,8], vertical_alignment="bottom")
-        with hrs_utilizadas_col:
-            hrs_utilizadas = InputComponent(label="Horas utilizadas", disabled=True, icon="⏱", placeholder="", value=dados.get("hrs_utilizadas")).input()
-            dados["hrs_utilizadas"] = hrs_utilizadas
-        with btn: 
-            ButtonComponent(label="Hrs utilizadas", icon="⏱", width="stretch", onclick=self.abrir_modal_hrs_utilizadas).btn()
-        with qtde_rejeitada_col:
-            qtde_rejeitada = InputComponent(label="Qtde rejeitada", value=dados.get("qtde_rejeitada")).input()
-            dados["qtde_rejeitada"] = qtde_rejeitada
 
         st.divider()
         st.write("Documentos:")

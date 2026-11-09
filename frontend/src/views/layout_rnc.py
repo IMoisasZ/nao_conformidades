@@ -3,6 +3,7 @@ import streamlit as st
 from components.tab import TabComponent
 
 from views.pages.rnc.dados_iniciais import DadosInciais
+from views.pages.rnc.horas_utilizadas import HorasUtilizadas
 from views.pages.rnc.nao_conformidade import NaoConformidade
 from views.pages.rnc.imagens import Imagens
 from views.pages.rnc.disposicao_nc import DisposicaoNc
@@ -46,10 +47,13 @@ class LayoutRnc:
         with btn_salvar:
             btn_salvar = ButtonComponent(label="Salvar").btn()
 
-        dados_iniciais, nao_conformidade, imagens, disposicao_nao_conformidade, causa_nao_conformidade, reinspecao, plano_de_acao = TabComponent(["Dados inciais", "Não Conformidade", "Imagens", "Disposição da Não Conformidade", "Causa da Não Conformidade", "Reinspeção", "Plano de Ação"]).tabs()
+        dados_iniciais, horas_utilizadas, nao_conformidade, imagens, disposicao_nao_conformidade, causa_nao_conformidade, reinspecao, plano_de_acao = TabComponent(["Dados inciais","Horas utilizadas","Não Conformidade", "Imagens", "Disposição da Não Conformidade", "Causa da Não Conformidade", "Reinspeção", "Plano de Ação"]).tabs()
 
         with dados_iniciais:
             DadosInciais().renderizar()
+            
+        with horas_utilizadas:
+            HorasUtilizadas().renderizar()
 
         with nao_conformidade:
             NaoConformidade().renderizar()
